@@ -1,26 +1,20 @@
 import tkinter as tk
-from tkinter import filedialog, messagebox
+from tkinter import messagebox, filedialog
 from PIL import ImageTk, Image
 import qrcode
-import os
 
 class QRApp:
     def __init__(self, root):
         self.root = root
         self.root.title("QR Code Generator")
-        self.root.geometry("500x600")
+        self.root.geometry("500x550")
         self.root.resizable(False, False)
 
-        self.file_path = None
-
-        self.label = tk.Label(root, text="Enter a URL or select a file", font=("Arial", 14))
+        self.label = tk.Label(root, text="Enter a URL or text", font=("Arial", 14))
         self.label.pack(pady=10)
 
         self.entry = tk.Entry(root, width=50, font=("Arial", 12))
         self.entry.pack(pady=5)
-
-        self.select_file_btn = tk.Button(root, text="Browse File (Image/PDF)", command=self.browse_file)
-        self.select_file_btn.pack(pady=5)
 
         self.generate_btn = tk.Button(root, text="Generate QR Code", bg="green", fg="white", command=self.generate_qr)
         self.generate_btn.pack(pady=20)
@@ -31,18 +25,10 @@ class QRApp:
         self.save_btn = tk.Button(root, text="Save QR Code", command=self.save_qr)
         self.save_btn.pack(pady=5)
 
-    def browse_file(self):
-        file_types = [("PDF or Images", "*.pdf *.png *.jpg *.jpeg *.gif")]
-        file = filedialog.askopenfilename(filetypes=file_types)
-        if file:
-            self.file_path = file
-            self.entry.delete(0, tk.END)
-            self.entry.insert(0, file)
-
     def generate_qr(self):
         data = self.entry.get().strip()
         if not data:
-            messagebox.showwarning("Missing Input", "Please enter a URL or select a file.")
+            messagebox.showwarning("Input Required", "Please enter some text or a URL.")
             return
 
         qr = qrcode.make(data)
@@ -50,17 +36,17 @@ class QRApp:
         qr = qr.resize((250, 250))
         self.tk_img = ImageTk.PhotoImage(qr)
         self.qr_label.config(image=self.tk_img)
-        messagebox.showinfo("Success", "QR code generated!")
+        messagebox.showinfo("Success", "QR Code generated!")
 
     def save_qr(self):
         if not hasattr(self, 'qr_img'):
-            messagebox.showwarning("No QR Code", "Generate a QR code first.")
+            messagebox.showwarning("No QR Code", "Please generate a QR Code first.")
             return
 
         file = filedialog.asksaveasfilename(defaultextension=".png", filetypes=[("PNG files", "*.png")])
         if file:
             self.qr_img.save(file)
-            messagebox.showinfo("Saved", f"QR Code saved as:\n{file}")
+            messagebox.showinfo("Saved", f"QR Code saved at:\n{file}")
 
 if __name__ == "__main__":
     root = tk.Tk()
